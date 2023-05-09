@@ -136,9 +136,7 @@ export default defineComponent({
     //목록가져오기
     async fetchData() {
       const len = 5;
-      const lastId = this.tasks.length
-        ? this.tasks[this.tasks.length - 1].id
-        : 0;
+      const lastId = this.tasks.length ? this.tasks[this.tasks.length - 1].id : 0;
 
       if (this.tasks.length > 0 && this.tasks.length == this.totalCount) {
         console.log("fetchData 호출안함", this.tasks.length, this.totalCount);
@@ -149,6 +147,7 @@ export default defineComponent({
         len,
       };
       const result = await todoApi.list(payload);
+      console.log("result : ",result);
       if (result.data.list) {
         this.tasks = [...this.tasks, ...result.data.list];
         this.totalCount = result.data.totalCount;
@@ -187,6 +186,10 @@ export default defineComponent({
           color: "primary",
         });
       }
+
+
+
+
     },
 
     //삭제
@@ -203,6 +206,8 @@ export default defineComponent({
           color: "primary",
         });
       }
+
+      todo.remove(item);
     },
 
     //더미리스트 만들기

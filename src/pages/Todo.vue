@@ -91,6 +91,7 @@ export default {
   },
   methods: {
     ...mapActions(useTodoStore, ["insertTodo","listTodo","removeTodo","editTodo"]),
+
     async addTask() {
       if(this.newTask){
         //store action 저장
@@ -109,10 +110,12 @@ export default {
         });
       }
     },
+
     removeItem(id){
       this.removeTodo(id);
       this.newTask="";
     },
+
     openDialog(item) {
       this.$refs.dialog.dialog = true;
       this.editTask = item;
