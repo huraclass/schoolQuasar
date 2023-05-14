@@ -21,7 +21,7 @@
     <!--list-->
     <q-list class="bg-white" separator bordered>
       <q-item
-        v-for="item in tasks"
+        v-for="item in lists"
         :key="item.title"
         @click="item.done = item.done == 'Y' ? 'N' : 'Y'"
         :class="{ 'done bg-blue-1': item.done == 'Y' }"
@@ -64,7 +64,9 @@
         </q-item-section>
       </q-item>
       <!--https://quasar.dev/vue-directives/intersection#intersection-api  //observed element-->
-      <div v-intersection="onIntersection" v-if="tasks.length"></div>
+      <div v-intersection="onIntersection" v-if="lists.length"></div>
+      <div v-intersection="onIntersection" v-if="this.listStore()"></div>
+
     </q-list>
     <!--no list-->
     <div v-if="!tasks.length" class="no-tasks absolute-center">
@@ -105,7 +107,7 @@ export default defineComponent({
     this.fetchData();
   },
   computed: {
-    ...mapState(useTodoStore, ["tasks"]),
+    ...mapState(useTodoStore, ["lists"]),
   },
   methods: {
     ...mapActions(useTodoStore, ["insertStore","listStore","removeStore","editStore","pop"]),
@@ -151,7 +153,7 @@ export default defineComponent({
       //const lastI = this.tasks.length ? this.tasks[this.tasks.length - 1].id : 0;//여기를 store버전으로 바꾸기
       const lastId = list.length ? list[list.length - 1].id : 0;
       if (list.length > 0 && list.length == this.totalCount) {//여기도
-        console.log("fetchData 호출안함", this.tasks.length, this.totalCount);
+        console.log("fetchData 호출안함", list.length, this.totalCount);
         return false;
       }
       const payload = {
@@ -160,7 +162,7 @@ export default defineComponent({
       };
       const result = await todoApi.list(payload);
       if (result.data.list) {
-        this.tasks = [...this.tasks, ...result.data.list];
+        //this.tasks = [...this.tasks, ...result.data.list];
         list = [...list,...result.data.list];
         this.totalCount = result.data.totalCount;
       }
@@ -176,6 +178,7 @@ export default defineComponent({
       item.done = "N";
       //this.tasks.splice(idx, 1, item);
       list.splice(idx, 1, item);
+      this.editStore(idx,item);
       if (this.editTask.title != this.origin) {
         //타이틀이 다를때만 수정
         await todoApi.update(item);
@@ -189,12 +192,7 @@ export default defineComponent({
 
     //삭제
     async removeDBItem(item) {
-      let list = this.listStore();
-      // 배열 안 오브젝트일때 idx
-      //const idx = this.tasks.findIndex((task) => task.id == item.id);
-      const idx = list.findIndex((task) => task.id == item.id);
-      //삭제 array.splice(시작 index, 제거 index, 추가 요소)
-      list.splice(idx, 1);
+      this.removeStore(item.id);
       const result = await todoApi.remove(item);
 
       if (result.status == 200) {
@@ -205,7 +203,6 @@ export default defineComponent({
         });
       }
 
-      todo.remove(item);
     },
 
     //intersection
