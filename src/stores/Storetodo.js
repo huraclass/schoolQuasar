@@ -13,11 +13,10 @@ export default defineStore("useTodo", {
 
   actions: {
 
-    insertTodo(title){
+    insertStore(title){
       // db에 넣기 return id
-
       if(this.tasks){
-        this.tasks.unshift({
+        this.tasks.push({
           id: uid(),
           title,
           done:'N'
@@ -30,13 +29,18 @@ export default defineStore("useTodo", {
           done:'N'
         })
       }
-
-      LocalStorage.set("todo", this.tasks);
     },
-    listTodo(){
+
+    pop() {
+      return this.tasks[this.tasks.length -  1];
+    },
+
+
+    listStore(){
       this.tasks = LocalStorage.getItem("todo");
     },
-    removeTodo(id){
+    removeStore(id){
+
       //this.tasks에서 id find해서 가져오기
       // 배열 안 오브젝트일때 idx
       const idx = this.tasks.findIndex(task=>task.id == id);
@@ -44,7 +48,7 @@ export default defineStore("useTodo", {
       this.tasks.splice(idx,1);
       LocalStorage.set("todo", this.tasks);
     },
-    editTodo(item){
+    editStore(item){
       //배열에서 수정하되 done은 'n'으로
       const idx = this.tasks.findIndex(task=>task == item);
       item.done = 'N';
