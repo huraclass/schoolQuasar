@@ -130,6 +130,8 @@ export default defineComponent({
             title: this.newTask,
             done: "N",
           });*/
+
+          this.insertStore(result);
           this.totalCount++;
         }
         await this.$q.notify({
@@ -145,9 +147,10 @@ export default defineComponent({
     //목록가져오기
     async fetchData() {
       const len = 5;
-      const lastId = this.tasks.length ? this.tasks[this.tasks.length - 1].id : 0;//여기를 store버전으로 바꾸기
-
-      if (this.tasks.length > 0 && this.tasks.length == this.totalCount) {//여기도
+      let list = this.listStore();
+      //const lastI = this.tasks.length ? this.tasks[this.tasks.length - 1].id : 0;//여기를 store버전으로 바꾸기
+      const lastId = list.length ? list[list.length - 1].id : 0;
+      if (list.length > 0 && list.length == this.totalCount) {//여기도
         console.log("fetchData 호출안함", this.tasks.length, this.totalCount);
         return false;
       }
@@ -158,6 +161,7 @@ export default defineComponent({
       const result = await todoApi.list(payload);
       if (result.data.list) {
         this.tasks = [...this.tasks, ...result.data.list];
+        list = [...list,...result.data.list];
         this.totalCount = result.data.totalCount;
       }
       // this.tasks = [];
@@ -166,10 +170,12 @@ export default defineComponent({
 
     async editDBTodo(item) {
       //배열에서 수정하되 done은 'n'으로
-      const idx = this.tasks.findIndex((task) => task == item);
+      let list = this.listStore();
+      //const idx = this.tasks.findIndex((task) => task == item);
+      const idx = list.findIndex((task) => task == item);
       item.done = "N";
-      this.tasks.splice(idx, 1, item);
-
+      //this.tasks.splice(idx, 1, item);
+      list.splice(idx, 1, item);
       if (this.editTask.title != this.origin) {
         //타이틀이 다를때만 수정
         await todoApi.update(item);
@@ -183,10 +189,12 @@ export default defineComponent({
 
     //삭제
     async removeDBItem(item) {
+      let list = this.listStore();
       // 배열 안 오브젝트일때 idx
-      const idx = this.tasks.findIndex((task) => task.id == item.id);
+      //const idx = this.tasks.findIndex((task) => task.id == item.id);
+      const idx = list.findIndex((task) => task.id == item.id);
       //삭제 array.splice(시작 index, 제거 index, 추가 요소)
-      this.tasks.splice(idx, 1);
+      list.splice(idx, 1);
       const result = await todoApi.remove(item);
 
       if (result.status == 200) {

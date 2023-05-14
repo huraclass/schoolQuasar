@@ -37,7 +37,7 @@ export default defineStore("useTodo", {
 
 
     listStore(){
-      this.tasks = LocalStorage.getItem("todo");
+      return this.tasks;
     },
     removeStore(id){
 
