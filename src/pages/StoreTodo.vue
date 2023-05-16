@@ -69,7 +69,7 @@
 
     </q-list>
     <!--no list-->
-    <div v-if="!tasks.length" class="no-tasks absolute-center">
+    <div v-if="!lists.length" class="no-tasks absolute-center">
       <q-icon name="check" size="100px" color="primary" />
       <div class="text-h5 text-primary text-center">No tasks</div>
     </div>
@@ -122,18 +122,14 @@ export default defineComponent({
       };
       //저장
       const result = await todoApi.create(payload);
-      this.insertStore(payload);
+
+      this.insertStore(payload.title);
+
+      console.log(payload);
       if (result.status == 200) {
 
         if (result.data.id) {
-          // front
-          /*this.tasks.unshift({
-            id: result.data.id,
-            title: this.newTask,
-            done: "N",
-          });*/
-
-          this.insertStore(result);
+          //this.insertStore(result);
           this.totalCount++;
         }
         await this.$q.notify({

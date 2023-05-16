@@ -16,7 +16,7 @@ export default defineStore("useTodo", {
     insertStore(title){
       // db에 넣기 return id
       if(this.lists){
-        this.lists.push({
+        this.lists.unshift({
           id: uid(),
           title,
           done:'N'
